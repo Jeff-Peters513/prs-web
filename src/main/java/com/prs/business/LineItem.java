@@ -13,11 +13,7 @@ public class LineItem {
 	@ManyToOne
 	@JoinColumn(name = "productId")
 	private Product product;
-	private int quanitity;
-	private double price;
-//	Foreign Key (ProductID) references product(ID),
-//	Foreign Key (RequestID) references request(ID),
-//	CONSTRAINT req_pdt unique (RequestID, ProductID)
+	private int quantity;
 
 	// empty constructor
 	public LineItem() {
@@ -25,14 +21,13 @@ public class LineItem {
 	}
 
 	// fully loaded constructor
-	public LineItem(int id, Request request, Product product, int quanitity, double price) {
+	public LineItem(int id, Request request, Product product, int quantity) {
 		super();
 		this.id = id;
 		this.request = request;
 		this.product = product;
-		this.quanitity = quanitity;
-		this.price = price;
-	}
+		this.quantity = quantity;
+		}
 
 	// getters and setters
 	public int getId() {
@@ -59,27 +54,20 @@ public class LineItem {
 		this.product = product;
 	}
 
-	public int getQuanitity() {
-		return quanitity;
+	public int getQuantity() {
+		return quantity;
 	}
 
-	public void setQuanitity(int quanitity) {
-		this.quanitity = quanitity;
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
 	}
 
-	public double getPrice() {
-		return price;
-	}
-
-	public void setPrice(double price) {
-		this.price = price;
-	}
 
 	// IDE generated toString()
 	@Override
 	public String toString() {
-		return "LineItem [id=" + id + ", request=" + request + ", product=" + product + ", quanitity=" + quanitity
-				+ ", price=" + price + "]";
+		return "LineItem [id=" + id + ", request=" + request + ", product=" + product + ", quantity=" + quantity
+				+  "]";
 	}
 
 }

@@ -22,9 +22,9 @@ public class LineItemController {
 	@GetMapping("/")
 	public JsonResponse list() {
 		JsonResponse jr = null;
-		List<LineItem> requests = lineItemRepo.findAll();
-		if (requests.size() > 0) {
-			jr = JsonResponse.getInstance(requests);
+		List<LineItem> lineItems = lineItemRepo.findAll();
+		if (lineItems.size() > 0) {
+			jr = JsonResponse.getInstance(lineItems);
 		} else {
 			jr = JsonResponse.getErrorInstance("No Line Item found.");
 		}
@@ -35,9 +35,9 @@ public class LineItemController {
 	@GetMapping("/{id}")
 	public JsonResponse get(@PathVariable int id) {
 		JsonResponse jr = null;
-		Optional<LineItem> request = lineItemRepo.findById(id);
-		if (request.isPresent()) {
-			jr = JsonResponse.getInstance(request.get());
+		Optional<LineItem> lineItem = lineItemRepo.findById(id);
+		if (lineItem.isPresent()) {
+			jr = JsonResponse.getInstance(lineItem.get());
 		} else {
 			jr = JsonResponse.getErrorInstance("No Line Item found for id: " + id);
 		}
