@@ -22,7 +22,7 @@ public class Request {
 	private double total;
 	private LocalDateTime submittedDate;
 	private String reasonForRejection;
-	//Foreign Key (UserID) references user(ID)
+	
 	
 	//empty constructor
 	public Request() {
