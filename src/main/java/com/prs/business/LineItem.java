@@ -27,7 +27,7 @@ public class LineItem {
 		this.request = request;
 		this.product = product;
 		this.quantity = quantity;
-		}
+	}
 
 	// getters and setters
 	public int getId() {
@@ -62,6 +62,12 @@ public class LineItem {
 		this.quantity = quantity;
 	}
 
+//	Commented out until the correct Annotation discovered	
+//	public double getLineItemSubTotal() {
+//		return quantity * product.getPrice();
+//	}
+
+	
 
 	// IDE generated toString()
 	@Override
@@ -69,5 +75,7 @@ public class LineItem {
 		return "LineItem [id=" + id + ", request=" + request + ", product=" + product + ", quantity=" + quantity
 				+  "]";
 	}
+
+
 
 }

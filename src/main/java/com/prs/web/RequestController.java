@@ -35,11 +35,9 @@ public class RequestController {
 	// list all requests in review status and not the logged in user whom is
 	// reviewing
 	@GetMapping("/list-review/{id}")
-	//public String getStudent(@PathVariable Integer studentId, Model model)
-	public JsonResponse requestListReview(@PathVariable Integer userId) {
-		// User user = null;
+	public JsonResponse requestListReview(@PathVariable int id) {
 		JsonResponse jr = null;
-		List<Request> limitRequest = requestRepo.findByUserIdNot(userId);
+		List<Request> limitRequest = requestRepo.findByUserIdNot(id);
 		if (limitRequest.size() > 0) {
 			jr = JsonResponse.getInstance(limitRequest);
 		} else {

@@ -13,7 +13,6 @@ import com.prs.business.Request;
 import com.prs.db.LineItemRepository;
 import com.prs.db.RequestRepository;
 
-
 @RestController
 @RequestMapping("/line-items")
 public class LineItemController {
@@ -39,8 +38,7 @@ public class LineItemController {
 	@GetMapping("/lines-for-pr/{id}")
 	public JsonResponse listPrLineItems(@PathVariable int id) {
 		JsonResponse jr = null;
-		Optional<Request> requests = requestRepo.findById(id);
-		List<LineItem> lineItems = lineItemRepo.findAllByRequest(requests);
+		List<LineItem> lineItems = lineItemRepo.findAllByRequestId(id);
 		if (lineItems.size() > 0) {
 			jr = JsonResponse.getInstance(lineItems);
 		} else {
@@ -48,8 +46,7 @@ public class LineItemController {
 		}
 		return jr;
 	}
-	
-	
+
 	// get /list one item
 	@GetMapping("/{id}")
 	public JsonResponse get(@PathVariable int id) {
@@ -65,12 +62,13 @@ public class LineItemController {
 
 	// "create" method
 	@PostMapping("/")
-	public JsonResponse createLineItem(@RequestBody LineItem l) {
+	public JsonResponse createLineItem(@RequestBody LineItem li) {
 		JsonResponse jr = null;
 		try {
-			l = lineItemRepo.save(l);
-			jr = JsonResponse.getInstance(l);
-		} catch (DataIntegrityViolationException dive) {
+			li = lineItemRepo.save(li);
+			jr = JsonResponse.getInstance(li);
+			recalculateTotal(li.getRequest());
+			} catch (DataIntegrityViolationException dive) {
 			jr = JsonResponse.getErrorInstance(dive.getRootCause().getMessage());
 			dive.printStackTrace();
 		} catch (Exception e) {
@@ -82,11 +80,12 @@ public class LineItemController {
 
 	// update method
 	@PutMapping("/")
-	public JsonResponse updateLineItem(@RequestBody LineItem l) {
+	public JsonResponse updateLineItem(@RequestBody LineItem li) {
 		JsonResponse jr = null;
 		try {
-			l = lineItemRepo.save(l);
-			jr = JsonResponse.getInstance(l);
+			li = lineItemRepo.save(li);
+			jr = JsonResponse.getInstance(li);
+			recalculateTotal(li.getRequest());
 		} catch (Exception e) {
 			jr = JsonResponse.getErrorInstance("Error updating LineItem: " + e.getMessage());
 			e.printStackTrace();
@@ -98,39 +97,34 @@ public class LineItemController {
 	public JsonResponse deleteLineItem(@PathVariable int id) {
 		JsonResponse jr = null;
 		try {
+			LineItem li = lineItemRepo.findById(id).get(); 
 			lineItemRepo.deleteById(id);
 			jr = JsonResponse.getInstance("Line Item id: " + id + " deleted successfully.");
-			//call method recalculateTotal(id)
-			//in this case the method removes the lineitem and adjusts total in Request assoicated with the lineitem id
-		} catch (Exception e) {
+			Request r = li.getRequest();
+			recalculateTotal(r);
+			} catch (Exception e) {
 			jr = JsonResponse.getErrorInstance("Error deleting Line Item: " + e.getMessage());
 			e.printStackTrace();
 		}
 		return jr;
 	}
-	
-//	public static double recalculateTotal(@PathVariable int id) {
-//		//sum all active line Item totals of a PR and sets PRtotal?
-//		double total= 0.0;
-//		// load all Request lineItems and make change
-//		//Optional<Request> requests = requestRepo.findById(id);
-//		//List<LineItem> lineItems = lineItemRepo.findAllByRequest(requests);
-//		//
-//		//if requestId exist and has more than one lineItem then process: LineItem.Quanity * Product.Price for each lineitem in the request
-//		if (!Request.getId(id) ==0) {
-//			for (int i=0; i = arraysize; i++) {
-//				double lineItemSubTotal = lineItem.quantity * product.price();
-//				double pRTotal = lineItemSubTotal;
-//				set.request.total(pRTotal);
-//			}else {
-//				System.out.println("No Purchase request exists no updated needed.");
-//			}
-//		}
-//			
-//		return total;
-//		}
-//	
-	
-	
-}
 
+	// method will (re)calculate the purchase request value and save it in the
+	// request "total"
+	public void recalculateTotal(Request request) {
+		List<LineItem> lineItems = lineItemRepo.findAllByRequestId(request.getId());	
+		// loop thru list (math performed in LineItem Entity) and sum to a total value
+		double pRTotal= 0.0;
+		for (LineItem lITotal: lineItems) {
+			pRTotal += lITotal.getQuantity()*lITotal.getProduct().getPrice();
+		}	
+		request.setTotal(pRTotal);
+		try {
+			requestRepo.save(request);
+		} catch (Exception e) {
+			throw e;
+		}	
+			
+	
+	}
+}
