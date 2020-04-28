@@ -62,12 +62,6 @@ public class LineItem {
 		this.quantity = quantity;
 	}
 
-//	Commented out until the correct Annotation discovered	
-//	public double getLineItemSubTotal() {
-//		return quantity * product.getPrice();
-//	}
-
-	
 
 	// IDE generated toString()
 	@Override

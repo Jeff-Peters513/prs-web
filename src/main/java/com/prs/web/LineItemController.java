@@ -68,7 +68,7 @@ public class LineItemController {
 			li = lineItemRepo.save(li);
 			jr = JsonResponse.getInstance(li);
 			recalculateTotal(li.getRequest());
-			} catch (DataIntegrityViolationException dive) {
+		} catch (DataIntegrityViolationException dive) {
 			jr = JsonResponse.getErrorInstance(dive.getRootCause().getMessage());
 			dive.printStackTrace();
 		} catch (Exception e) {
@@ -97,12 +97,12 @@ public class LineItemController {
 	public JsonResponse deleteLineItem(@PathVariable int id) {
 		JsonResponse jr = null;
 		try {
-			LineItem li = lineItemRepo.findById(id).get(); 
+			LineItem li = lineItemRepo.findById(id).get();
 			lineItemRepo.deleteById(id);
 			jr = JsonResponse.getInstance("Line Item id: " + id + " deleted successfully.");
-			Request r = li.getRequest();
-			recalculateTotal(r);
-			} catch (Exception e) {
+			Request request = li.getRequest();
+			recalculateTotal(request);
+		} catch (Exception e) {
 			jr = JsonResponse.getErrorInstance("Error deleting Line Item: " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -112,19 +112,21 @@ public class LineItemController {
 	// method will (re)calculate the purchase request value and save it in the
 	// request "total"
 	public void recalculateTotal(Request request) {
-		List<LineItem> lineItems = lineItemRepo.findAllByRequestId(request.getId());	
-		// loop thru list (math performed in LineItem Entity) and sum to a total value
-		double pRTotal= 0.0;
-		for (LineItem lITotal: lineItems) {
-			pRTotal += lITotal.getQuantity()*lITotal.getProduct().getPrice();
-		}	
+		List<LineItem> lineItems = lineItemRepo.findAllByRequestId(request.getId());
+		// loop thru list and perform math and sum to a total value
+		double pRTotal = 0.0;
+		for (LineItem lITotal : lineItems) {
+			pRTotal += lITotal.getQuantity() * lITotal.getProduct().getPrice();
+			// System.out.println(lITotal);
+			// System.out.println(pRTotal);
+		}
+
 		request.setTotal(pRTotal);
 		try {
 			requestRepo.save(request);
 		} catch (Exception e) {
 			throw e;
-		}	
-			
-	
+		}
+
 	}
 }
