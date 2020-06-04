@@ -12,6 +12,7 @@ import com.prs.business.JsonResponse;
 import com.prs.business.Request;
 import com.prs.db.RequestRepository;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/requests")
 public class RequestController {
@@ -35,9 +36,9 @@ public class RequestController {
 	// list all requests in review status and not the logged in user whom is
 	// reviewing
 	@GetMapping("/list-review/{id}")
-	public JsonResponse requestListReview(@PathVariable int id) {
+	public JsonResponse requestListReviewNotUserID(@PathVariable int id) {
 		JsonResponse jr = null;
-		List<Request> limitRequest = requestRepo.findByUserIdNot(id);
+		List<Request> limitRequest = requestRepo.findByStatusAndUserIdNot("Review", id);
 		if (limitRequest.size() > 0) {
 			jr = JsonResponse.getInstance(limitRequest);
 		} else {
@@ -62,6 +63,7 @@ public class RequestController {
 	// "create method
 	@PostMapping("/")
 	public JsonResponse createRequest(@RequestBody Request r) {
+		System.out.println(r);
 		JsonResponse jr = null;
 		r.setStatus("New");
 		r.setSubmittedDate(LocalDateTime.now());

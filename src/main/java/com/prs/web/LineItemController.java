@@ -13,6 +13,7 @@ import com.prs.business.Request;
 import com.prs.db.LineItemRepository;
 import com.prs.db.RequestRepository;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/line-items")
 public class LineItemController {

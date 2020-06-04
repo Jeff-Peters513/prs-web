@@ -11,7 +11,7 @@ import com.prs.business.JsonResponse;
 import com.prs.business.Product;
 import com.prs.db.ProductRepository;
 
-
+@CrossOrigin
 @RestController
 @RequestMapping("/products")
 public class ProductController {
